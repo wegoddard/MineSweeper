@@ -23,6 +23,66 @@ namespace MineSweeper
         public MainWindow()
         {
             InitializeComponent();
+            CreateGameBoard();
+        }
+
+        public void CreateGameBoard()
+        {
+            int columns = 10;
+            int rows = 10;
+
+            // Create grid
+            Grid GameBoard = new Grid();
+            GameBoard.Width = 400;
+            GameBoard.Height = 400;
+            GameBoard.HorizontalAlignment = HorizontalAlignment.Center;
+            GameBoard.VerticalAlignment = VerticalAlignment.Bottom;
+            GameBoard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C0C0C0"));
+
+            // Create  grid rows and columns
+            for (int c = 0; c < columns; c++)
+            {
+                ColumnDefinition col = new ColumnDefinition();
+                GameBoard.ColumnDefinitions.Add(col);
+            }
+
+            for (int r = 0; r < rows; r++)
+            {
+                RowDefinition row = new RowDefinition();
+                GameBoard.RowDefinitions.Add(row);
+            }
+
+            // Add gameboard to background grid
+            BackgroundGrid.Children.Add(GameBoard);
+
+            // Create buttons
+ 
+            for (int c = 0; c < columns; c++)
+            {
+                for (int r = 0; r < rows; r++)
+                {
+                    Button button = new Button();
+                    button.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#000000"));
+                    button.BorderThickness = new Thickness(1);
+                    button.Height = 40;
+                    button.Height = 40;
+                    // add click handler to button
+                    button.Click += new RoutedEventHandler(button_Click);
+
+                    // add button to grid
+                    Grid.SetRow(button, r);
+                    Grid.SetColumn(button, c);
+                    GameBoard.Children.Add(button);
+
+
+                }
+            }
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            button.Visibility = Visibility.Hidden;
         }
     }
 }
