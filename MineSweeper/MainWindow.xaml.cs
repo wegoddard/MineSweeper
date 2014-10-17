@@ -36,7 +36,7 @@ namespace MineSweeper
             mainWindow.Height = BoardSize * (CellSize - 1) + 133;
             mainWindow.Width = BoardSize * (CellSize - 1) + 37;
 
-            // create overlapping horizontal rectangles
+            // create overlapping horizontal rectangles (for gridlines)
             for (int i = 0; i < BoardSize; i++)
             {
                 Rectangle rect = new Rectangle();
@@ -48,43 +48,52 @@ namespace MineSweeper
                 gridBoard.Children.Add(rect);
             }
 
-            // create overlapping vertical rectangles
+            // create overlapping vertical rectangles (for gridlines)
             for (int i = 0; i < BoardSize; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
                 rect.Width = CellSize;
                 rect.Height = CellSize * BoardSize - (BoardSize - 1); 
-                Canvas.SetLeft(rect, i * CellSize - i);
-                Canvas.SetTop(rect, -1);
+                Canvas.SetLeft(rect, i * CellSize - i );
+                Canvas.SetTop(rect, - 1);
                 gridBoard.Children.Add(rect);
             }
 
             // Add mines
             AddMines();
 
-            //// Create buttons
-            //for (int c = 0; c < columns; c++)
-            //{
-            //    for (int r = 0; r < rows; r++)
-            //    {
+            // Buttons
+            AddButtons();
 
+        }
 
-            //        //Button button = new Button();
-            //        //button.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-            //        //button.BorderThickness = new Thickness(1);
-            //        //button.Height = 16;
-            //        //button.Height = 16;
+        private void AddButtons()
+        {
+            // Create buttons
+            for (int c = 0; c < BoardSize; c++)
+            {
+                for (int r = 0; r < BoardSize; r++)
+                {
+                    // create button, remove border, set image
+                    Button button = new Button();
+                    button.BorderThickness = new Thickness(0);
+                    button.Height = CellSize - 1;
+                    button.Width = CellSize - 1;
+                    BitmapImage bmp = new BitmapImage(new Uri("Assets/ButtonForeground.png", UriKind.Relative));
+                    Image image = new Image();
+                    image.Source = bmp;
+                    button.Content = image;
 
-            //        //// add click handler to button
-            //        //button.Click += new RoutedEventHandler(button_Click);
+                    // add click handler to button
+                    button.Click += new RoutedEventHandler(button_Click);
 
-            //        //// add button to grid
-            //        //Grid.SetRow(button, r);
-            //        //Grid.SetColumn(button, c);
-            //        //gridBoard.Children.Add(button);
-            //    }
-            //}
+                    // add button to canvas
+                    Canvas.SetLeft(button, r * (CellSize - 1) + 1);
+                    Canvas.SetTop(button, c * (CellSize - 1));
+                    gridBoard.Children.Add(button);
+                }
+            }
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
