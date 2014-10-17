@@ -61,6 +61,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GridControl.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -92,6 +93,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\ButtonForeground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Mine.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\MineNoBorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Mine1pxBorder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
