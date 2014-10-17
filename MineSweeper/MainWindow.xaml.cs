@@ -26,65 +26,42 @@ namespace MineSweeper
             CreateGameBoard();
         }
 
+        const int BoardSize = 10;
+
+        const int CellSize = 17;
+
         public void CreateGameBoard()
         {
+            // adjust main window size
+            mainWindow.Height = BoardSize * (CellSize - 1) + 133;
+            mainWindow.Width = BoardSize * (CellSize - 1) + 37;
+
             // create overlapping horizontal rectangles
-            int cellSize = 18;
-            int numOfCells = 21;
-
-            // adjust main window
-            mainWindow.Height = numOfCells * (cellSize - 1) + 133;
-            mainWindow.Width = numOfCells * (cellSize - 1) + 37;
-
-            for (int i = 0; i < numOfCells; i++)
+            for (int i = 0; i < BoardSize; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = cellSize * numOfCells - (numOfCells - 1);  
-                rect.Height = cellSize;
+                rect.Width = CellSize * BoardSize - (BoardSize - 1);  
+                rect.Height = CellSize;
                 Canvas.SetLeft(rect, 0);
-                Canvas.SetTop(rect, i * cellSize - i - 1);
+                Canvas.SetTop(rect, i * CellSize - i - 1);
                 gridBoard.Children.Add(rect);
             }
 
             // create overlapping vertical rectangles
-            for (int i = 0; i < numOfCells; i++)
+            for (int i = 0; i < BoardSize; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = cellSize;
-                rect.Height = cellSize * numOfCells - (numOfCells - 1); 
-                Canvas.SetLeft(rect, i * cellSize - i);
+                rect.Width = CellSize;
+                rect.Height = CellSize * BoardSize - (BoardSize - 1); 
+                Canvas.SetLeft(rect, i * CellSize - i);
                 Canvas.SetTop(rect, -1);
                 gridBoard.Children.Add(rect);
             }
 
-
-            //int columns = 10;
-            //int rows = 10;
-            //int mines = 10;
-
-            //// Height and Width
-            //gridBoard.Width = 200;
-            //gridBoard.Height = 200;
-
-            //// Create  grid rows and columns
-            //for (int c = 0; c < columns; c++)
-            //{
-            //    ColumnDefinition col = new ColumnDefinition();
-            //    col.Width = new GridLength(17);
-            //    gridBoard.ColumnDefinitions.Add(col);
-            //}
-
-            //for (int r = 0; r < rows; r++)
-            //{
-            //    RowDefinition row = new RowDefinition();
-            //    row.Height = new GridLength(17);
-            //    gridBoard.RowDefinitions.Add(row);
-            //}
-
             // Add mines
-            //AddMines();
+            AddMines();
 
             //// Create buttons
             //for (int c = 0; c < columns; c++)
@@ -116,34 +93,34 @@ namespace MineSweeper
             button.Visibility = Visibility.Hidden;
         }
 
-        //private void AddMines()
-        //{
+        private void AddMines()
+        {
+            int mineCount = 10;
 
-            //int mineCount = 10;
-            //int[,] mineGrid = new int[10, 10];
+            int[,] mineGrid = new int[mineCount, mineCount];
 
-            //Random rnd = new Random();
-            //int i = mineCount;
-            //do
-            //{
-            //    int row = rnd.Next(10);
-            //    int col = rnd.Next(10);
-            //    if (mineGrid[col, row] == 0)
-            //    {
-            //        mineGrid[col, row] = 1;
+            Random rnd = new Random();
+            int i = mineCount;
+            do
+            {
+                int row = rnd.Next(BoardSize);
+                int col = rnd.Next(BoardSize);
+                if (mineGrid[col, row] == 0)
+                {
+                    mineGrid[col, row] = 1;
 
-            //        // Create image and add to first cell, overlayed by button
-            //        Image image = new Image();
-            //        image.Source = new BitmapImage(new Uri("assets/Mine1pxBorder.png", UriKind.Relative));
-            //        image.Stretch = Stretch.None;
-            //        Grid.SetRow(image, row);
-            //        Grid.SetColumn(image, col);
-            //        gridBoard.Children.Add(image);
+                    // Create image and add to first cell, overlayed by button
+                    Image image = new Image();
+                    image.Source = new BitmapImage(new Uri("assets/MineNoBorder.png", UriKind.Relative));
+                    image.Stretch = Stretch.None;
+                    Canvas.SetLeft(image, 1 + col * (CellSize - 1) );
+                    Canvas.SetTop(image, 0 + row * (CellSize - 1));
+                    gridBoard.Children.Add(image);
 
-            //        i--;
-            //    }
-            //} while (i > 0);
+                    i--;
+                }
+            } while (i > 0);
 
-        //}
+        }
     }
 }
