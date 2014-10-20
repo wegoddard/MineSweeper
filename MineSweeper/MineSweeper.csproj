@@ -98,10 +98,21 @@
     <Resource Include="Assets\ButtonForeground.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Mine.png" />
+    <Resource Include="Assets\MineNoBorder.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\MineNoBorder.png" />
+    <Resource Include="Assets\Eight.png" />
+    <Resource Include="Assets\Five.png" />
+    <Resource Include="Assets\Four.png" />
+    <Resource Include="Assets\One.png" />
+    <Resource Include="Assets\RedMine.png" />
+    <Resource Include="Assets\Seven.png" />
+    <Resource Include="Assets\Six.png" />
+    <Resource Include="Assets\Three.png" />
+    <Resource Include="Assets\Two.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Happy.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
