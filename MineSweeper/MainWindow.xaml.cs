@@ -26,30 +26,30 @@ namespace MineSweeper
             CreateGameBoard();
         }
 
-        const int BoardSize = 20;
+        const int BoardSize = 10;
 
-        const int CellSize = 17;
+        const int CellSize = 16;
 
         int[,] MineGrid = new int[BoardSize, BoardSize];
 
         public void CreateGameBoard()
         {
             // set title grid size
-            TitleGrid.Width = BoardSize * (CellSize - 1) + 20;
+            TitleGrid.Width = BoardSize * (CellSize) + 20;
 
             // adjust main window size
-            mainWindow.Height = BoardSize * (CellSize - 1) + 133;
-            mainWindow.Width = BoardSize * (CellSize - 1) + 37;
+            mainWindow.Height = BoardSize * (CellSize) + 133;
+            mainWindow.Width = BoardSize * (CellSize) + 37;
 
             // create overlapping horizontal rectangles (for gridlines)
             for (int i = 0; i < BoardSize; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = CellSize * BoardSize - (BoardSize - 1);
-                rect.Height = CellSize;
+                rect.Width = (CellSize + 1) * BoardSize - (BoardSize - 1);
+                rect.Height = CellSize + 1;
                 Canvas.SetLeft(rect, 0);
-                Canvas.SetTop(rect, i * CellSize - i - 1);
+                Canvas.SetTop(rect, i * (CellSize + 1) - i - 1);
                 gridBoard.Children.Add(rect);
             }
 
@@ -58,9 +58,9 @@ namespace MineSweeper
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = CellSize;
-                rect.Height = CellSize * BoardSize - (BoardSize - 1);
-                Canvas.SetLeft(rect, i * CellSize - i);
+                rect.Width = CellSize + 1;
+                rect.Height = (CellSize + 1) * BoardSize - (BoardSize - 1);
+                Canvas.SetLeft(rect, i * (CellSize + 1) - i);
                 Canvas.SetTop(rect, -1);
                 gridBoard.Children.Add(rect);
             }
@@ -85,8 +85,8 @@ namespace MineSweeper
                     // create button, remove border, set image
                     Button button = new Button();
                     button.BorderThickness = new Thickness(0);
-                    button.Height = CellSize - 1;
-                    button.Width = CellSize - 1;
+                    button.Height = CellSize;
+                    button.Width = CellSize;
                     BitmapImage bmp = new BitmapImage(new Uri("Assets/ButtonForeground.png", UriKind.Relative));
                     Image image = new Image();
                     image.Source = bmp;
@@ -96,8 +96,8 @@ namespace MineSweeper
                     button.Click += new RoutedEventHandler(button_Click);
 
                     // add button to canvas
-                    Canvas.SetLeft(button, r * (CellSize - 1) + 1);
-                    Canvas.SetTop(button, c * (CellSize - 1));
+                    Canvas.SetLeft(button, r * (CellSize) + 1);
+                    Canvas.SetTop(button, c * (CellSize));
                     gridBoard.Children.Add(button);
                 }
             }
@@ -111,7 +111,7 @@ namespace MineSweeper
 
         private void AddMines()
         {
-            int mineCount = 92;
+            int mineCount = 6;
 
             //int[,] mineGrid = new int[BoardSize, BoardSize];
 
@@ -129,8 +129,8 @@ namespace MineSweeper
                     Image image = new Image();
                     image.Source = new BitmapImage(new Uri("assets/MineNoBorder.png", UriKind.Relative));
                     image.Stretch = Stretch.None;
-                    Canvas.SetLeft(image, 1 + col * (CellSize - 1) );
-                    Canvas.SetTop(image, 0 + row * (CellSize - 1));
+                    Canvas.SetLeft(image, 1 + col * (CellSize) );
+                    Canvas.SetTop(image, 0 + row * (CellSize));
                     gridBoard.Children.Add(image);
 
                     i--;
@@ -164,8 +164,8 @@ namespace MineSweeper
                         // set image if image is not empty
                         if (image.Source != null)
                         {
-                            Canvas.SetLeft(image, 1 + i * (CellSize - 1));
-                            Canvas.SetTop(image, j * (CellSize - 1));
+                            Canvas.SetLeft(image, 1 + i * (CellSize));
+                            Canvas.SetTop(image, j * (CellSize));
                             gridBoard.Children.Add(image);
                         }
                     }
@@ -260,34 +260,46 @@ namespace MineSweeper
             switch(minesNearby)
             {
                 case 1:
-                    image.Source = new BitmapImage(new Uri("Assets/One.png", UriKind.Relative));;
+                    image.Source = new BitmapImage(new Uri("Assets/One.png", UriKind.Relative));
                     break;
                 case 2:
-                    image.Source = new BitmapImage(new Uri("Assets/Two.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Two.png", UriKind.Relative));
                     break;
                 case 3:
-                    image.Source = new BitmapImage(new Uri("Assets/Three.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Three.png", UriKind.Relative));
                     break;
                 case 4:
-                    image.Source = new BitmapImage(new Uri("Assets/Four.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Four.png", UriKind.Relative));
                     break;
                 case 5:
-                    image.Source = new BitmapImage(new Uri("Assets/Five.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Five.png", UriKind.Relative));
                     break;
                 case 6:
-                    image.Source = new BitmapImage(new Uri("Assets/Six.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Six.png", UriKind.Relative));
                     break;
                 case 7:
-                    image.Source = new BitmapImage(new Uri("Assets/Seven.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Seven.png", UriKind.Relative));
                     break;
                 case 8:
-                    image.Source = new BitmapImage(new Uri("Assets/Eight.png", UriKind.Relative)); ;
+                    image.Source = new BitmapImage(new Uri("Assets/Eight.png", UriKind.Relative));
                     break;
             }
 
             return image;
         }
-        
-        
+
+        // clear() 
+        // get coordinates of cell 
+        // Hide button
+        // for each adjacent cell
+            
+                // if button is visible
+                    // if cell value is zero
+                        // Clear() on adjacent cell
+                    // else if cell value is 0 > x > 9
+                        // hide button
+                // end if
+        // end for
+            
     }
 }
