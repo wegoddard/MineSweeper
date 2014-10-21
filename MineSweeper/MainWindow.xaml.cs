@@ -26,7 +26,7 @@ namespace MineSweeper
             CreateGameBoard();
         }
 
-        const int BoardSize = 10;
+        const int BoardSize = 12;
 
         const int CellSize = 16;
 
@@ -46,10 +46,10 @@ namespace MineSweeper
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = (CellSize + 1) * BoardSize - (BoardSize - 1);
+                rect.Width = BoardSize * CellSize + 1;
                 rect.Height = CellSize + 1;
                 Canvas.SetLeft(rect, 0);
-                Canvas.SetTop(rect, i * (CellSize + 1) - i - 1);
+                Canvas.SetTop(rect, i * CellSize - 1);
                 gridBoard.Children.Add(rect);
             }
 
@@ -59,8 +59,8 @@ namespace MineSweeper
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
                 rect.Width = CellSize + 1;
-                rect.Height = (CellSize + 1) * BoardSize - (BoardSize - 1);
-                Canvas.SetLeft(rect, i * (CellSize + 1) - i);
+                rect.Height = BoardSize * CellSize + 1;
+                Canvas.SetLeft(rect, i *  CellSize);
                 Canvas.SetTop(rect, -1);
                 gridBoard.Children.Add(rect);
             }
