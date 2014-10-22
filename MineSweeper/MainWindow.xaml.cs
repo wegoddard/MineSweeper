@@ -26,7 +26,9 @@ namespace MineSweeper
             CreateGameBoard();
         }
 
-        const int BoardSize = 16;
+        const int Mines = 17;
+
+        const int BoardSize = 12;
 
         const int CellSize = 16;
 
@@ -115,10 +117,8 @@ namespace MineSweeper
 
         private void AddMines()
         {
-            int mineCount = 128;
-
             Random rnd = new Random();
-            int i = mineCount;
+            int i = Mines;
             do
             {
                 int row = rnd.Next(BoardSize);
@@ -326,6 +326,12 @@ namespace MineSweeper
             }
         }
     
+        /// <summary>
+        /// Return a list of adjacent buttons, given a grid coordinate
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private List<GridButton> GetAdjacentButtons(int x, int y)
         {
             List<GridButton> buttons = new List<GridButton>();
@@ -364,5 +370,61 @@ namespace MineSweeper
 
             return buttons;
         }
+
+        /// <summary>
+        /// Create a new game by deleting and re-creating all the game elements 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        {
+            ClearBoard();
+            RemoveAllButtons();
+            AddMines();
+            AddNumbers();
+            AddButtons();
+        }
+
+        /// <summary>
+        /// Clears all images of mines and numbers from the board
+        /// </summary>
+        private void ClearBoard()
+        {
+            // re-initialize the mine list
+            for (int i = 0; i < BoardSize; i++)
+                for (int j = 0; j < BoardSize; j++)
+                    MineGrid[i, j] = 0;
+
+            // remove images from gameboard
+            List<Image> images = new List<Image>();
+
+            foreach (UIElement child in gridBoard.Children)
+                if (child is Image)
+                    images.Add((Image)child);
+
+            foreach (Image image in images)
+                gridBoard.Children.Remove(image);
+        }
+
+        /// <summary>
+        /// Remove all buttons from canvas and renew list of buttons
+        /// </summary>
+        private void RemoveAllButtons()
+        {
+            // re-initialize array
+            Buttons = new GridButton[BoardSize, BoardSize];
+
+            // create list of buttons from canvas
+            List<GridButton> items = new List<GridButton>();
+            foreach (UIElement child in gridBoard.Children)
+                if (child is GridButton)
+                    items.Add((GridButton)child);
+
+            // remove buttons from canvas
+            foreach (GridButton button in items)
+                gridBoard.Children.Remove(button);
+        }
+
+
     }
 }

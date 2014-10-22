@@ -11,7 +11,7 @@
         </Grid.RowDefinitions>
         <Canvas>
             <Grid Name="TitleGrid" HorizontalAlignment="Center">                
-                <Button BorderThickness="0" >
+                <Button Name="btnNewGame" BorderThickness="0" Click="btnNewGame_Click">
                     <Image Source="/Assets/Happy.png" Width="26"/>
                 </Button>                
             </Grid> 
