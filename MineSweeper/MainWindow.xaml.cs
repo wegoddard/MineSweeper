@@ -36,6 +36,9 @@ namespace MineSweeper
 
         GridButton[,] Buttons = new GridButton[BoardSize, BoardSize];
 
+        /// <summary>
+        /// Determine the size of the gameboard, draw gridlines, draw mines, draw numbers and add buttons.
+        /// </summary>
         public void CreateGameBoard()
         {
             // set title grid size
@@ -96,6 +99,9 @@ namespace MineSweeper
                     // subscribe to event
                     button.ButtonClicked += ButtonClicked;
 
+                    // right-click event
+                    button.MouseRightButtonDown += RightClick;
+
                     // add button to canvas
                     Canvas.SetLeft(button, c * (CellSize) + 1);
                     Canvas.SetTop(button, r * (CellSize));
@@ -110,9 +116,15 @@ namespace MineSweeper
         private void ButtonClicked(object sender, EventArgs e)
         {
             GridButton button = sender as GridButton;
-            int x = button.XCoordinate;
-            int y = button.YCoordinate;
             ClearCells(button);
+        }
+
+        private void RightClick(object sender, EventArgs e)
+        {
+            Image image = new Image();
+            image.Source = new BitmapImage(new Uri("assets/MineFlag.png", UriKind.Relative));
+            image.Stretch = Stretch.None;
+            ((GridButton)sender).Content = image;
         }
 
         private void AddMines()
@@ -175,7 +187,12 @@ namespace MineSweeper
             }
         }
 
-        // if the adjacent cell has a mine, add one to the counter
+        /// <summary>
+        /// Given the coordinates of a cell, return the number of mines adjacent to that cell
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private int CountAdjacentMines(int x, int y)
         {
             // initialize counter
@@ -255,6 +272,12 @@ namespace MineSweeper
             return mineCounter;
         }
 
+        /// <summary>
+        /// Given a number, return the image used to represent 
+        /// that number of adjacent mines
+        /// </summary>
+        /// <param name="minesNearby"></param>
+        /// <returns></returns>
         private Image GetNumberImage(int minesNearby)
         {
             // if number = x return corresponding image
