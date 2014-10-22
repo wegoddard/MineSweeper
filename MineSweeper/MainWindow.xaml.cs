@@ -26,11 +26,13 @@ namespace MineSweeper
             CreateGameBoard();
         }
 
-        const int BoardSize = 12;
+        const int BoardSize = 16;
 
         const int CellSize = 16;
 
         int[,] MineGrid = new int[BoardSize, BoardSize];
+
+        GridButton[,] Buttons = new GridButton[BoardSize, BoardSize];
 
         public void CreateGameBoard()
         {
@@ -77,43 +79,43 @@ namespace MineSweeper
 
         private void AddButtons()
         {
-            // Create buttons
+            // Create Buttons
             for (int c = 0; c < BoardSize; c++)
             {
                 for (int r = 0; r < BoardSize; r++)
                 {
                     // create button, remove border, set image
-                    Button button = new Button();
-                    button.BorderThickness = new Thickness(0);
+                    GridButton button = new GridButton();
                     button.Height = CellSize;
                     button.Width = CellSize;
-                    BitmapImage bmp = new BitmapImage(new Uri("Assets/ButtonForeground.png", UriKind.Relative));
-                    Image image = new Image();
-                    image.Source = bmp;
-                    button.Content = image;
+                    button.XCoordinate = c;
+                    button.YCoordinate = r;
 
-                    // add click handler to button
-                    button.Click += new RoutedEventHandler(button_Click);
+                    // subscribe to event
+                    button.ButtonClicked += ButtonClicked;
 
                     // add button to canvas
-                    Canvas.SetLeft(button, r * (CellSize) + 1);
-                    Canvas.SetTop(button, c * (CellSize));
+                    Canvas.SetLeft(button, c * (CellSize) + 1);
+                    Canvas.SetTop(button, r * (CellSize));
                     gridBoard.Children.Add(button);
+
+                    // add button to array
+                    Buttons[c, r] = button;
                 }
             }
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void ButtonClicked(object sender, EventArgs e)
         {
-            Button button = sender as Button;
-            button.Visibility = Visibility.Hidden;
+            GridButton button = sender as GridButton;
+            int x = button.XCoordinate;
+            int y = button.YCoordinate;
+            ClearCells(button);
         }
 
         private void AddMines()
         {
-            int mineCount = 6;
-
-            //int[,] mineGrid = new int[BoardSize, BoardSize];
+            int mineCount = 128;
 
             Random rnd = new Random();
             int i = mineCount;
@@ -129,7 +131,7 @@ namespace MineSweeper
                     Image image = new Image();
                     image.Source = new BitmapImage(new Uri("assets/MineNoBorder.png", UriKind.Relative));
                     image.Stretch = Stretch.None;
-                    Canvas.SetLeft(image, 1 + col * (CellSize) );
+                    Canvas.SetLeft(image, 1 + col * (CellSize));
                     Canvas.SetTop(image, 0 + row * (CellSize));
                     gridBoard.Children.Add(image);
 
@@ -199,7 +201,7 @@ namespace MineSweeper
 
             // check upper right (x+1, y-1)
             // if not off grid
-            if (x < (BoardSize - 2) && y > 0)
+            if (x < (BoardSize - 1) && y > 0)
             {
                 // if has mine
                 if (MineGrid[x + 1, y - 1] == 9)
@@ -216,7 +218,7 @@ namespace MineSweeper
             }
 
             // check right center (x+1, 0)
-            if (x < BoardSize - 2)
+            if (x < BoardSize - 1)
             {
                 // if has mine
                 if (MineGrid[x + 1, y] == 9)
@@ -288,18 +290,79 @@ namespace MineSweeper
             return image;
         }
 
-        // clear() 
-        // get coordinates of cell 
-        // Hide button
-        // for each adjacent cell
-            
-                // if button is visible
-                    // if cell value is zero
-                        // Clear() on adjacent cell
-                    // else if cell value is 0 > x > 9
-                        // hide button
-                // end if
-        // end for
-            
+        /// <summary>
+        /// Get coordinates of current cell, and clear any adjacent and connected open cells
+        /// </summary>
+        /// <param name="x">Horizontal coordinate, as measured from the left side</param>
+        /// <param name="y">Vertical coordinate, as measured from the top</param>
+        private void ClearCells(GridButton button)
+        { 
+            // Hide button
+            button.Visibility = Visibility.Hidden;
+
+            // if cell value is zero
+            if (MineGrid[button.XCoordinate, button.YCoordinate] == 0)
+            {
+                // for each adjacent cell
+                foreach (GridButton adjacentButton in GetAdjacentButtons(button.XCoordinate, button.YCoordinate))
+                {
+                    // if button is visible
+                    if (adjacentButton.Visibility != Visibility.Hidden)
+                    {
+                        // if cell value is zero
+                        if (MineGrid[adjacentButton.XCoordinate, adjacentButton.YCoordinate] == 0)
+                        {
+                            // Clear() on adjacent cell
+                            ClearCells(adjacentButton);
+                        }
+                        // else if cell value is 0 > x > 9
+                        else if (MineGrid[adjacentButton.XCoordinate, adjacentButton.YCoordinate] != 9)
+                        {
+                            // hide button
+                            adjacentButton.Visibility = Visibility.Hidden;
+                        }
+                    }
+                }
+            }
+        }
+    
+        private List<GridButton> GetAdjacentButtons(int x, int y)
+        {
+            List<GridButton> buttons = new List<GridButton>();
+
+            // check upper left cell
+            if (x > 0 && y > 0)
+                buttons.Add(Buttons[x - 1, y - 1]);
+
+            // upper center
+            if (y > 0)
+                buttons.Add(Buttons[x, y - 1]);
+
+            // upper right
+            if (x < BoardSize - 1 && y > 0)
+                buttons.Add(Buttons[x + 1, y - 1]);
+
+            // left center
+            if (x > 0)
+                buttons.Add(Buttons[x - 1, y]);
+
+            // right center
+            if (x < BoardSize - 1)
+                buttons.Add(Buttons[x + 1, y]);
+
+            // lower left
+            if (x > 0 && y < BoardSize - 1)
+                buttons.Add(Buttons[x - 1, y + 1]);
+
+            // lower center
+            if (y < BoardSize - 1)
+                buttons.Add(Buttons[x, y + 1]);
+
+            // lower right
+            if (x < BoardSize - 1 && y < BoardSize - 1)
+                buttons.Add(Buttons[x + 1, y + 1]);
+
+            return buttons;
+        }
     }
 }
