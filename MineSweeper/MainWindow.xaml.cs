@@ -117,8 +117,59 @@ namespace MineSweeper
         {
             GridButton button = sender as GridButton;
             ClearCells(button);
+
+            // if button clicked is a mine, game is over
+            if (MineGrid[button.XCoordinate, button.YCoordinate] == 9)
+            {
+                ClearMines();
+                FlagMine(button);
+                DisableButtons();
+                ChangeNewGameIcon();
+            }
         }
 
+        /// <summary>
+        /// Replace the image located under the current button with a RedFlag image indicating that
+        /// the user has clicked on a mine.
+        /// </summary>
+        /// <param name="button"></param>
+        private void FlagMine(GridButton button)
+        {
+            Image image = new Image();
+            image.Source = new BitmapImage(new Uri("assets/RedMine.png", UriKind.Relative));
+            image.Stretch = Stretch.None;
+            Canvas.SetLeft(image, button.XCoordinate * CellSize + 1);
+            Canvas.SetTop(image, button.YCoordinate * CellSize);
+            gridBoard.Children.Add(image);
+        }
+
+        /// <summary>
+        /// Disables all buttons
+        /// </summary>
+        private void DisableButtons()
+        {
+            foreach(GridButton button in Buttons)
+            {
+                button.IsEnabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Change happy face to not-so-happy face
+        /// </summary>
+        private void ChangeNewGameIcon()
+        {
+            Image image = new Image();
+            image.Source = new BitmapImage(new Uri("assets/GameOver.png", UriKind.Relative));
+            image.Stretch = Stretch.None;
+            btnNewGame.Content = image;
+        }
+
+        /// <summary>
+        /// Create a flag when the user right-clicks a button to flag that a mine may be located there
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RightClick(object sender, EventArgs e)
         {
             Image image = new Image();
@@ -127,6 +178,9 @@ namespace MineSweeper
             ((GridButton)sender).Content = image;
         }
 
+        /// <summary>
+        /// Add a number of mines randomly to the gameboard, according to the total number Mines.
+        /// </summary>
         private void AddMines()
         {
             Random rnd = new Random();
@@ -401,6 +455,12 @@ namespace MineSweeper
         /// <param name="e"></param>
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
+            // restore happy face
+            Image image = new Image();
+            image.Source = new BitmapImage(new Uri("assets/Happy.png", UriKind.Relative));
+            image.Stretch = Stretch.None;
+            btnNewGame.Content = image;
+
             ClearBoard();
             RemoveAllButtons();
             AddMines();
@@ -448,6 +508,17 @@ namespace MineSweeper
                 gridBoard.Children.Remove(button);
         }
 
-
+        /// <summary>
+        /// Remove buttons on gameboard covering mines.
+        /// </summary>
+        private void ClearMines()
+        {
+            for (int i = 0; i < BoardSize; i++)
+                for (int j = 0; j < BoardSize; j++)
+                {
+                    if (MineGrid[i, j] == 9)
+                        gridBoard.Children.Remove(Buttons[i, j]);
+                }
+        }
     }
 }
