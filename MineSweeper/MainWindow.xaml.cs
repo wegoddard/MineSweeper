@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace MineSweeper
 {
@@ -20,21 +21,23 @@ namespace MineSweeper
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            CreateGameBoard();
-        }
+        const int Mines = 10;
 
-        const int Mines = 17;
-
-        const int BoardSize = 12;
+        const int BoardSize = 20;
 
         const int CellSize = 16;
 
         int[,] MineGrid = new int[BoardSize, BoardSize];
 
         GridButton[,] Buttons = new GridButton[BoardSize, BoardSize];
+
+        bool IsGameInProgress = false;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            CreateGameBoard();
+        }
 
         /// <summary>
         /// Determine the size of the gameboard, draw gridlines, draw mines, draw numbers and add buttons.
@@ -115,6 +118,12 @@ namespace MineSweeper
 
         private void ButtonClicked(object sender, EventArgs e)
         {
+            if (!IsGameInProgress)
+            {
+                tmrGameTimer.StartTimer();
+                IsGameInProgress = true;
+            }
+
             GridButton button = sender as GridButton;
             ClearCells(button);
 
@@ -125,6 +134,7 @@ namespace MineSweeper
                 FlagMine(button);
                 DisableButtons();
                 ChangeNewGameIcon();
+                StopTimer();
             }
         }
 
@@ -164,6 +174,17 @@ namespace MineSweeper
             image.Stretch = Stretch.None;
             btnNewGame.Content = image;
         }
+
+        private void StopTimer()
+        {
+            tmrGameTimer.StopTimer();
+        }
+
+        private void ResetTimer()
+        {
+            tmrGameTimer.ResetTimer();
+        }
+
 
         /// <summary>
         /// Create a flag when the user right-clicks a button to flag that a mine may be located there
@@ -455,12 +476,18 @@ namespace MineSweeper
         /// <param name="e"></param>
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
+            // stop game
+            IsGameInProgress = false;
+            ResetTimer();
+            
+
             // restore happy face
             Image image = new Image();
             image.Source = new BitmapImage(new Uri("assets/Happy.png", UriKind.Relative));
             image.Stretch = Stretch.None;
             btnNewGame.Content = image;
 
+            // reset board
             ClearBoard();
             RemoveAllButtons();
             AddMines();

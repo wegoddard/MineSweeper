@@ -15,6 +15,7 @@
                     <Image Source="/Assets/Happy.png" Width="26"/>
                 </Button>                
             </Grid> 
+            <local:Timer x:Name="tmrGameTimer" Canvas.Right="6" Canvas.Top="4" />
         </Canvas>
         <Canvas Name="gridBoard" Margin="10,5,10,10" Grid.Row="1"/>
     </Grid>
