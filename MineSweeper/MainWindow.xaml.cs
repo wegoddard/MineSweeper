@@ -21,7 +21,7 @@ namespace MineSweeper
     /// </summary>
     public partial class MainWindow : Window
     {
-        const int Mines = 10;
+        const int Mines = 20;
 
         const int BoardSize = 20;
 
@@ -135,6 +135,25 @@ namespace MineSweeper
                 DisableButtons();
                 ChangeNewGameIcon();
                 StopTimer();
+
+                // for each marked button 
+                foreach (GridButton gridButton in Buttons)
+                {
+                    // if no mine is underneath and button has been flagged
+                    if (MineGrid[gridButton.XCoordinate, gridButton.YCoordinate] != 9 && Buttons[gridButton.XCoordinate, gridButton.YCoordinate].IsFlagged)
+                    {
+                        // hide button
+                        gridButton.Visibility = Visibility.Hidden;
+
+                        // place red X over mine
+                        Image image = new Image();
+                        image.Source = new BitmapImage(new Uri("assets/MineRedX.png", UriKind.Relative));
+                        image.Stretch = Stretch.None;
+                        Canvas.SetLeft(image, gridButton.XCoordinate * CellSize + 1);
+                        Canvas.SetTop(image, gridButton.YCoordinate * CellSize);
+                        gridBoard.Children.Add(image);
+                    }
+                }
             }
         }
 
@@ -193,10 +212,14 @@ namespace MineSweeper
         /// <param name="e"></param>
         private void RightClick(object sender, EventArgs e)
         {
+            GridButton button = sender as GridButton;
             Image image = new Image();
             image.Source = new BitmapImage(new Uri("assets/MineFlag.png", UriKind.Relative));
             image.Stretch = Stretch.None;
-            ((GridButton)sender).Content = image;
+            button.Content = image;
+
+            // mark button in button array as marked
+            Buttons[button.XCoordinate, button.YCoordinate].IsFlagged = true;
         }
 
         /// <summary>

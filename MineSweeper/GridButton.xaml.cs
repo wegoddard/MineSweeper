@@ -26,6 +26,8 @@ namespace MineSweeper
 
         public static readonly DependencyProperty YCoordinateProperty = DependencyProperty.Register("YCoordinate", typeof(int), typeof(GridButton), new PropertyMetadata());
 
+        public static readonly DependencyProperty IsFlaggedProperty = DependencyProperty.Register("IsFlagged", typeof(bool), typeof(GridButton), new PropertyMetadata());
+
         public int XCoordinate
         {
             get { return (int)GetValue(XCoordinateProperty); }
@@ -36,6 +38,12 @@ namespace MineSweeper
         {
             get { return (int)GetValue(YCoordinateProperty); }
             set { SetValue(YCoordinateProperty, value); }
+        }
+
+        public bool IsFlagged
+        {
+            get { return (bool)GetValue(IsFlaggedProperty); }
+            set { SetValue(IsFlaggedProperty, value); }
         }
 
         public GridButton()
