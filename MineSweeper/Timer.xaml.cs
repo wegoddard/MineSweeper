@@ -52,7 +52,7 @@ namespace MineSweeper
             imgTens.Source = GetImage(tens);
 
             // hundreds of seconds
-            int hundreds = ((seconds % 100) - (seconds % 10)) / 100;
+            int hundreds = (seconds - (seconds % 100)) / 100;
             imgHundreds.Source = GetImage(hundreds);
         }
 
