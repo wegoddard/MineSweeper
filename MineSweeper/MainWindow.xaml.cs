@@ -253,12 +253,20 @@ namespace MineSweeper
         {
             GridButton button = sender as GridButton;
             Image image = new Image();
-            image.Source = new BitmapImage(new Uri("assets/MineFlag.png", UriKind.Relative));
-            image.Stretch = Stretch.None;
-            button.Content = image;
 
             // mark button in button array as marked
-            Buttons[button.XCoordinate, button.YCoordinate].IsFlagged = true;
+            if (button.IsFlagged == false)
+            {
+                button.IsFlagged = true;
+                image.Source = new BitmapImage(new Uri("assets/MineFlag.png", UriKind.Relative));
+            }
+            else
+            {
+                button.IsFlagged = true;
+                image.Source = new BitmapImage(new Uri("assets/ButtonForeground.png", UriKind.Relative));
+            }
+
+            button.Content = image;
         }
 
         /// <summary>
@@ -514,7 +522,6 @@ namespace MineSweeper
             IsGameInProgress = false;
             ResetTimer();
             
-
             // restore happy face
             Image image = new Image();
             image.Source = new BitmapImage(new Uri("assets/Happy.png", UriKind.Relative));
@@ -529,6 +536,15 @@ namespace MineSweeper
             {
                 button.Visibility = Visibility.Visible;
                 button.IsEnabled = true;
+                
+                // remove flag from button
+                if (button.IsFlagged)
+                {
+                    button.IsFlagged = false;
+                    Image gridButtonImage = new Image();
+                    gridButtonImage.Source = new BitmapImage(new Uri("assets/ButtonForeground.png", UriKind.Relative));
+                    button.Content = gridButtonImage;
+                }
             }
         }
 
