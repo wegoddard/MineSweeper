@@ -21,13 +21,11 @@ namespace MineSweeper
     /// </summary>
     public partial class MainWindow : Window
     {
-        const int MineCount = 40;
+        const int MineCount = 160;
 
-        const int BoardSize = 16;
+        const int BoardSize = 30;
 
         const int CellSize = 16;
-
-        //int[,] MineGrid = new int[BoardSize, BoardSize];
 
         GridButton[,] Buttons = new GridButton[BoardSize, BoardSize];
 
@@ -79,20 +77,17 @@ namespace MineSweeper
                 gridBoard.Children.Add(rect);
             }
 
-            // Add mines
-            AddMines();
-
-            // Hints
-            AddHints();
-
             // Buttons
             AddButtons();
         }
 
         /// <summary>
-        /// Add a number of mines randomly to the gameboard, according to the total number Mines.
+        /// Add a number of mines randomly to the gameboard, according to the total number Mines. X and Y represent
+        /// the coordinates of the first button click.
         /// </summary>
-        private void AddMines()
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        private void AddMines(GridButton button)
         {
             Random rnd = new Random();
             int i = MineCount;
@@ -101,26 +96,18 @@ namespace MineSweeper
                 int row = rnd.Next(BoardSize);
                 int col = rnd.Next(BoardSize);
 
-                // if no mine is at the current position
-                //if (MineGrid[col, row] == 0)
-                if (Mines[col, row] == null)
+                // if no mine is at the current position and this is NOT the position of the first button click
+                if (Mines[col, row] == null && !(col == button.XCoordinate && row == button.YCoordinate))
                 {
                     // add mine
-                    //MineGrid[col, row] = 9;   // bomb is encoded as 9
                     Mine mine = new Mine();
                     mine.XCoordinate = col;
                     mine.YCoordinate = row;
                     Mines[col, row] = mine;
 
                     // Create image and add to first cell, overlayed by button
-                    //Image image = new Image();
-                    //image.Source = new BitmapImage(new Uri("assets/MineNoBorder.png", UriKind.Relative));
-                    //image.Stretch = Stretch.None;
-                    //Canvas.SetLeft(image, 1 + col * (CellSize));
                     Canvas.SetLeft(mine, 1 + col * CellSize);
-                    //Canvas.SetTop(image, 0 + row * (CellSize));
                     Canvas.SetTop(mine, 0 + row * CellSize);
-                    //gridBoard.Children.Add(image);
                     gridBoard.Children.Add(mine);
 
                     i--;
@@ -142,6 +129,9 @@ namespace MineSweeper
                     button.XCoordinate = c;
                     button.YCoordinate = r;
 
+                    // set z-index
+                    Canvas.SetZIndex(button, 10);
+
                     // subscribe to event
                     button.ButtonClicked += ButtonClicked;
 
@@ -161,25 +151,23 @@ namespace MineSweeper
 
         private void ButtonClicked(object sender, EventArgs e)
         {
+            GridButton button = sender as GridButton;
+
+            // is this a new game?
             if (!IsGameInProgress)
             {
+                AddMines(button);
+                AddHints();
+
+
+
                 tmrGameTimer.StartTimer();
                 IsGameInProgress = true;
             }
 
-            GridButton button = sender as GridButton;
             ClearCells(button);
 
-            // if user has clicked on mine on first click
-            //if (MineGrid[button.XCoordinate, button.YCoordinate] == 9)
-            if (Mines[button.XCoordinate, button.YCoordinate] != null)
-            {
-                MoveMine(button);
-            }
-
-
             // if button clicked is a mine, game is over
-            //if (MineGrid[button.XCoordinate, button.YCoordinate] == 9)
             if (Mines[button.XCoordinate, button.YCoordinate] != null)
             {
                 ClearMines();
@@ -192,7 +180,6 @@ namespace MineSweeper
                 foreach (GridButton gridButton in Buttons)
                 {
                     // if no mine is underneath and button has been flagged
-                    //if (MineGrid[gridButton.XCoordinate, gridButton.YCoordinate] != 9 && Buttons[gridButton.XCoordinate, gridButton.YCoordinate].IsFlagged)
                     if (Mines[gridButton.XCoordinate, gridButton.YCoordinate] == null && Buttons[gridButton.XCoordinate, gridButton.YCoordinate].IsFlagged)
                     {
                         // hide button
@@ -252,23 +239,10 @@ namespace MineSweeper
             tmrGameTimer.StopTimer();
         }
 
-        private void MoveMine(GridButton button)
-        {
-            // remove current mine
-            // recalculate hint numbers around current position
-            // find new location for mine
-            // update mine data structure
-            // add mine to canvas
-            // recalculate numbers at new position
-            // add new numbers to new position
-        }
-
-
         private void ResetTimer()
         {
             tmrGameTimer.ResetTimer();
         }
-
 
         /// <summary>
         /// Create a flag when the user right-clicks a button to flag that a mine may be located there
@@ -287,8 +261,6 @@ namespace MineSweeper
             Buttons[button.XCoordinate, button.YCoordinate].IsFlagged = true;
         }
 
-
-
         /// <summary>
         /// AddNumbers places all the hint numbers on the board
         /// </summary>
@@ -300,14 +272,12 @@ namespace MineSweeper
                 for (int j = 0; j < BoardSize; j++)
                 {
                     // if the element is not a mine
-                    //if (MineGrid[i, j] != 9)
                     if (Mines[i, j] == null)
                     {
                         // for each adjacent cell if the cell has a mine, add one to counter
                         int adjacentMines = CountAdjacentMines(i, j);
 
                         // assign counter to grid element
-                        //MineGrid[i, j] = adjacentMines;
                         Hints[i, j] = adjacentMines;
 
                         // add corresponding image to canvas
@@ -342,7 +312,6 @@ namespace MineSweeper
             if (x > 0 && y > 0)
             {
                 // if has mine
-                //if (MineGrid[x - 1, y - 1] == 9)
                 if (Mines[x - 1, y - 1] != null)
                     mineCounter++;
             }
@@ -352,7 +321,6 @@ namespace MineSweeper
             if (y > 0)
             {
                 // if has mine
-                //if (MineGrid[x, y - 1] == 9)
                 if (Mines[x, y - 1] != null)
                     mineCounter++;
             }
@@ -362,7 +330,6 @@ namespace MineSweeper
             if (x < (BoardSize - 1) && y > 0)
             {
                 // if has mine
-                //if (MineGrid[x + 1, y - 1] == 9)
                 if (Mines[x + 1, y - 1] != null)
                     mineCounter++;
             }
@@ -372,7 +339,6 @@ namespace MineSweeper
             if (x > 0)
             {
                 // if has mine
-                //if (MineGrid[x - 1, y] == 9)
                 if (Mines[x - 1, y] != null)
                     mineCounter++;
             }
@@ -381,7 +347,6 @@ namespace MineSweeper
             if (x < BoardSize - 1)
             {
                 // if has mine
-                //if (MineGrid[x + 1, y] == 9)
                 if (Mines[x + 1, y] != null)
                     mineCounter++;
             }
@@ -391,7 +356,6 @@ namespace MineSweeper
             if (x > 0 && y < BoardSize - 1)
             {
                 // if has mine
-                //if (MineGrid[x - 1, y + 1] == 9)
                 if (Mines[x - 1, y + 1] != null)
                     mineCounter++;
             }
@@ -401,7 +365,6 @@ namespace MineSweeper
             if (y < BoardSize - 1)
             {
                 // if has mine
-                //if (MineGrid[x, y + 1] == 9)
                 if (Mines[x, y + 1] != null)
                     mineCounter++;
             }
@@ -410,7 +373,6 @@ namespace MineSweeper
             if (x < BoardSize - 1 && y < BoardSize - 1)
             {
                 // if has mine
-                //if (MineGrid[x + 1, y + 1] == 9)
                 if (Mines[x + 1, y + 1] != null)
                     mineCounter++;
             }
@@ -471,7 +433,6 @@ namespace MineSweeper
             button.Visibility = Visibility.Hidden;
 
             // if cell is empty
-            //if (MineGrid[button.XCoordinate, button.YCoordinate] == 0)
             if (Mines[button.XCoordinate, button.YCoordinate] == null && Hints[button.XCoordinate, button.YCoordinate] == 0)
             {
                 // for each adjacent cell
@@ -562,10 +523,13 @@ namespace MineSweeper
 
             // reset board
             ClearBoard();
-            RemoveAllButtons();
-            AddMines();
-            AddHints();
-            AddButtons();
+
+            // enable buttons
+            foreach(GridButton button in Buttons)
+            {
+                button.Visibility = Visibility.Visible;
+                button.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -573,13 +537,7 @@ namespace MineSweeper
         /// </summary>
         private void ClearBoard()
         {
-            // re-initialize the mine list
-            //for (int i = 0; i < BoardSize; i++)
-            //    for (int j = 0; j < BoardSize; j++)
-            //        MineGrid[i, j] = 0;
-            
-
-            // remove images from gameboard
+            // remove hints from gameboard
             List<Image> images = new List<Image>();
 
             foreach (UIElement child in gridBoard.Children)
@@ -589,24 +547,11 @@ namespace MineSweeper
             foreach (Image image in images)
                 gridBoard.Children.Remove(image);
 
-            //// clear mines from board
-            //Mines = new Mine[BoardSize, BoardSize];
-            //List<Mine> items = new List<Mine>();
-            //foreach (UIElement child in gridBoard.Children)
-            //    if (child is Mine)
-            //        items.Add((Mine)child);
-
-            //// remove mines from canvas
-            //foreach(Mine image in items)
-            //    gridBoard.Children.Remove(image);
-
             // remove mines
             foreach (Mine mine in Mines)
                 gridBoard.Children.Remove(mine);
             
             Mines = new Mine[BoardSize, BoardSize];
-
-
         }
 
         /// <summary>
@@ -620,18 +565,6 @@ namespace MineSweeper
 
             // re-initialize array
             Buttons = new GridButton[BoardSize, BoardSize];
-
-
-
-            //// create list of buttons from canvas
-            //List<GridButton> items = new List<GridButton>();
-            //foreach (UIElement child in gridBoard.Children)
-            //    if (child is GridButton)
-            //        items.Add((GridButton)child);
-
-            //// remove buttons from canvas
-            //foreach (GridButton button in items)
-            //    gridBoard.Children.Remove(button);
         }
 
         /// <summary>
@@ -642,9 +575,12 @@ namespace MineSweeper
             for (int i = 0; i < BoardSize; i++)
                 for (int j = 0; j < BoardSize; j++)
                 {
-                    //if (MineGrid[i, j] == 9)
+                    // if the current location is s a mine
                     if (Mines[i, j] != null)
-                        gridBoard.Children.Remove(Buttons[i, j]);
+                    {
+                        // hide the button
+                        Buttons[i, j].Visibility = Visibility.Hidden;
+                    }
                 }
         }
     }
