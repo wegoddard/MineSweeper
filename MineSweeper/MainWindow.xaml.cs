@@ -276,7 +276,7 @@ namespace MineSweeper
             }
             else
             {
-                button.IsFlagged = true;
+                button.IsFlagged = false;
                 image.Source = new BitmapImage(new Uri("assets/ButtonForeground.png", UriKind.Relative));
             }
 
