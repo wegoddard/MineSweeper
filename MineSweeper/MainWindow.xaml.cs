@@ -21,23 +21,26 @@ namespace MineSweeper
     /// </summary>
     public partial class MainWindow : Window
     {
-        const int MineCount = 160;
-
-        const int BoardSize = 30;
+        int MineCount = 99;
 
         const int CellSize = 16;
 
-        GridButton[,] Buttons = new GridButton[BoardSize, BoardSize];
+        int GameHeight = 16;
 
-        Mine[,] Mines = new Mine[BoardSize, BoardSize];
+        int GameWidth = 30;
 
-        int[,] Hints = new int[BoardSize, BoardSize];
+        GridButton[,] Buttons;
+
+        Mine[,] Mines;
+
+        int[,] Hints;
 
         bool IsGameInProgress = false;
 
         public MainWindow()
         {
             InitializeComponent();
+
             CreateGameBoard();
         }
 
@@ -46,19 +49,24 @@ namespace MineSweeper
         /// </summary>
         public void CreateGameBoard()
         {
+            // allocate data structures
+            Buttons = new GridButton[GameWidth, GameHeight];
+            Mines = new Mine[GameWidth, GameHeight];
+            Hints = new int[GameWidth, GameHeight];
+
             // set title grid size
-            TitleGrid.Width = BoardSize * (CellSize) + 20;
+            TitleGrid.Width = GameWidth * CellSize + 20;
 
             // adjust main window size
-            mainWindow.Height = BoardSize * (CellSize) + 133;
-            mainWindow.Width = BoardSize * (CellSize) + 37;
+            mainWindow.Height = GameHeight * CellSize + 150;
+            mainWindow.Width = GameWidth * CellSize + 37;
 
             // create overlapping horizontal rectangles (for gridlines)
-            for (int i = 0; i < BoardSize; i++)
+            for (int i = 0; i < GameHeight; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
-                rect.Width = BoardSize * CellSize + 1;
+                rect.Width = GameWidth * CellSize + 1;
                 rect.Height = CellSize + 1;
                 Canvas.SetLeft(rect, 0);
                 Canvas.SetTop(rect, i * CellSize - 1);
@@ -66,19 +74,25 @@ namespace MineSweeper
             }
 
             // create overlapping vertical rectangles (for gridlines)
-            for (int i = 0; i < BoardSize; i++)
+            for (int i = 0; i < GameWidth; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7B7B7B"));
                 rect.Width = CellSize + 1;
-                rect.Height = BoardSize * CellSize + 1;
-                Canvas.SetLeft(rect, i *  CellSize);
+                rect.Height = GameHeight * CellSize + 1;
+                Canvas.SetLeft(rect, i * CellSize);
                 Canvas.SetTop(rect, -1);
                 gridBoard.Children.Add(rect);
             }
 
             // Buttons
             AddButtons();
+        }
+
+        private void ClearGameBoard()
+        {
+            // remove all objects from the canvas
+            gridBoard.Children.Clear();
         }
 
         /// <summary>
@@ -93,8 +107,8 @@ namespace MineSweeper
             int i = MineCount;
             do
             {
-                int row = rnd.Next(BoardSize);
-                int col = rnd.Next(BoardSize);
+                int row = rnd.Next(GameHeight);
+                int col = rnd.Next(GameWidth);
 
                 // if no mine is at the current position and this is NOT the position of the first button click
                 if (Mines[col, row] == null && !(col == button.XCoordinate && row == button.YCoordinate))
@@ -118,9 +132,9 @@ namespace MineSweeper
         private void AddButtons()
         {
             // Create Buttons
-            for (int c = 0; c < BoardSize; c++)
+            for (int c = 0; c < GameWidth; c++)
             {
-                for (int r = 0; r < BoardSize; r++)
+                for (int r = 0; r < GameHeight; r++)
                 {
                     // create button, remove border, set image
                     GridButton button = new GridButton();
@@ -275,9 +289,9 @@ namespace MineSweeper
         private void AddHints()
         {
             // for each element of the grid
-            for (int i = 0; i < BoardSize; i++)
+            for (int i = 0; i < GameWidth; i++)
             {
-                for (int j = 0; j < BoardSize; j++)
+                for (int j = 0; j < GameHeight; j++)
                 {
                     // if the element is not a mine
                     if (Mines[i, j] == null)
@@ -335,7 +349,7 @@ namespace MineSweeper
 
             // check upper right (x+1, y-1)
             // if not off grid
-            if (x < (BoardSize - 1) && y > 0)
+            if (x < (GameWidth - 1) && y > 0)
             {
                 // if has mine
                 if (Mines[x + 1, y - 1] != null)
@@ -352,7 +366,7 @@ namespace MineSweeper
             }
 
             // check right center (x+1, 0)
-            if (x < BoardSize - 1)
+            if (x < GameWidth - 1)
             {
                 // if has mine
                 if (Mines[x + 1, y] != null)
@@ -361,7 +375,7 @@ namespace MineSweeper
 
             // check lower left (x-1, y+1)
             // if not off grid
-            if (x > 0 && y < BoardSize - 1)
+            if (x > 0 && y < GameHeight - 1)
             {
                 // if has mine
                 if (Mines[x - 1, y + 1] != null)
@@ -370,7 +384,7 @@ namespace MineSweeper
 
             // check lower center (0, y+1)
             // if not off grid
-            if (y < BoardSize - 1)
+            if (y < GameHeight - 1)
             {
                 // if has mine
                 if (Mines[x, y + 1] != null)
@@ -378,7 +392,7 @@ namespace MineSweeper
             }
 
             // check lower right (x+1, y+1)
-            if (x < BoardSize - 1 && y < BoardSize - 1)
+            if (x < GameWidth - 1 && y < GameHeight - 1)
             {
                 // if has mine
                 if (Mines[x + 1, y + 1] != null)
@@ -485,7 +499,7 @@ namespace MineSweeper
                 buttons.Add(Buttons[x, y - 1]);
 
             // upper right
-            if (x < BoardSize - 1 && y > 0)
+            if (x < GameWidth - 1 && y > 0)
                 buttons.Add(Buttons[x + 1, y - 1]);
 
             // left center
@@ -493,19 +507,19 @@ namespace MineSweeper
                 buttons.Add(Buttons[x - 1, y]);
 
             // right center
-            if (x < BoardSize - 1)
+            if (x < GameWidth - 1)
                 buttons.Add(Buttons[x + 1, y]);
 
             // lower left
-            if (x > 0 && y < BoardSize - 1)
+            if (x > 0 && y < GameHeight - 1)
                 buttons.Add(Buttons[x - 1, y + 1]);
 
             // lower center
-            if (y < BoardSize - 1)
+            if (y < GameHeight - 1)
                 buttons.Add(Buttons[x, y + 1]);
 
             // lower right
-            if (x < BoardSize - 1 && y < BoardSize - 1)
+            if (x < GameWidth - 1 && y < GameHeight - 1)
                 buttons.Add(Buttons[x + 1, y + 1]);
 
             return buttons;
@@ -516,7 +530,8 @@ namespace MineSweeper
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        private void 
+            btnNewGame_Click(object sender, RoutedEventArgs e)
         {
             // stop game
             IsGameInProgress = false;
@@ -556,6 +571,9 @@ namespace MineSweeper
             // remove hints from gameboard
             List<Image> images = new List<Image>();
 
+            // re-initialize Hint data structure
+            Hints = new int[GameWidth, GameHeight];
+
             foreach (UIElement child in gridBoard.Children)
                 if (child is Image)
                     images.Add((Image)child);
@@ -567,7 +585,7 @@ namespace MineSweeper
             foreach (Mine mine in Mines)
                 gridBoard.Children.Remove(mine);
             
-            Mines = new Mine[BoardSize, BoardSize];
+            Mines = new Mine[GameWidth, GameHeight];
         }
 
         /// <summary>
@@ -580,7 +598,7 @@ namespace MineSweeper
                 gridBoard.Children.Remove(button);
 
             // re-initialize array
-            Buttons = new GridButton[BoardSize, BoardSize];
+            Buttons = new GridButton[GameHeight, GameWidth];
         }
 
         /// <summary>
@@ -588,8 +606,9 @@ namespace MineSweeper
         /// </summary>
         private void ClearMines()
         {
-            for (int i = 0; i < BoardSize; i++)
-                for (int j = 0; j < BoardSize; j++)
+            for (int i = 0; i < GameWidth; i++)
+            {
+                for (int j = 0; j < GameHeight; j++)
                 {
                     // if the current location is s a mine
                     if (Mines[i, j] != null)
@@ -598,6 +617,46 @@ namespace MineSweeper
                         Buttons[i, j].Visibility = Visibility.Hidden;
                     }
                 }
+            }
         }
+
+        #region Custom Popup
+
+        private void mnu_Custom_Click(object sender, RoutedEventArgs e)
+        {
+            popCustom.IsOpen = true;
+        }
+
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnOk_Click(object sender, RoutedEventArgs e)
+        {
+            GameHeight = Convert.ToInt32(txtHeight.Text);
+            GameWidth = Convert.ToInt32(txtWidth.Text);
+            MineCount = Convert.ToInt32(txtMines.Text);
+
+            // start new game
+            ClearGameBoard();
+            CreateGameBoard();
+            btnNewGame_Click(sender, e);
+
+            popCustom.IsOpen = false;
+            txtHeight.Text = "";
+            txtWidth.Text = "";
+            txtMines.Text = "";
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            popCustom.IsOpen = false;
+            txtHeight.Text = "";
+            txtWidth.Text = "";
+            txtMines.Text = "";
+        }
+
+        #endregion
     }
 }

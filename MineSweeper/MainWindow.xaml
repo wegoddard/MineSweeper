@@ -4,12 +4,48 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:MineSweeper"
         Title="MainWindow" >
+
     <Grid Name="BackgroundGrid" Background="#C0C0C0" >
         <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
             <RowDefinition Height="80" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Canvas>
+        <Menu Width="Auto" Height="20" Background="#C0C0C0" DockPanel.Dock="Top">
+            <MenuItem Header="Game">
+                <MenuItem Header="New" Click="btnNewGame_Click" />
+                <Separator />
+                <MenuItem Header="Beginner" />
+                <MenuItem Header="Intermediate" />
+                <MenuItem Header="Expert" />
+                <MenuItem Header="Custom..." Click="mnu_Custom_Click"/>
+                <Separator />
+                <MenuItem Header="Exit" Click="Close"/>
+            </MenuItem>
+        </Menu>
+        <Canvas Grid.Row="1">
+            <Popup Name="popCustom" IsOpen="False" Placement="Mouse" >
+                    <Grid Background="#C0C0C0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Width" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <Label Content="Height" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                    <Label Content="Mines" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                    <TextBox Name="txtWidth" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                    <TextBox  Name="txtHeight" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                    <TextBox  Name="txtMines" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                    <Button Content="OK" Grid.Row="3" Grid.Column="0" Height="30" Width="48" Click="btnOk_Click" Margin="5"/>
+                    <Button Content="Cancel" Grid.Row="3" Grid.Column="1" Height="30" Width="48" Click="btnCancel_Click" Margin="5"/>
+                </Grid>
+            </Popup>
             <Grid Name="TitleGrid" HorizontalAlignment="Center">                
                 <Button Name="btnNewGame" BorderThickness="0" Click="btnNewGame_Click">
                     <Image Source="/Assets/Happy.png" Width="26"/>
@@ -17,6 +53,6 @@
             </Grid> 
             <local:Timer x:Name="tmrGameTimer" Canvas.Right="6" Canvas.Top="4" />
         </Canvas>
-        <Canvas Name="gridBoard" Margin="10,5,10,10" Grid.Row="1"/>
+        <Canvas Name="gridBoard" Margin="10,5,10,10" Grid.Row="2"/>
     </Grid>
 </Window>
