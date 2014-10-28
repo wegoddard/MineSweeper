@@ -37,6 +37,8 @@ namespace MineSweeper
 
         bool IsGameInProgress = false;
 
+        int FlagCounter = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -58,7 +60,7 @@ namespace MineSweeper
             TitleGrid.Width = GameWidth * CellSize + 20;
 
             // adjust main window size
-            mainWindow.Height = GameHeight * CellSize + 150;
+            mainWindow.Height = GameHeight * CellSize + 110;
             mainWindow.Width = GameWidth * CellSize + 37;
 
             // create overlapping horizontal rectangles (for gridlines)
@@ -273,11 +275,17 @@ namespace MineSweeper
             {
                 button.IsFlagged = true;
                 image.Source = new BitmapImage(new Uri("assets/MineFlag.png", UriKind.Relative));
+
+                // update mine counter
+                FlagCounter++;
+                ctrGameCounter.SetCounter(FlagCounter);
             }
             else
             {
                 button.IsFlagged = false;
                 image.Source = new BitmapImage(new Uri("assets/ButtonForeground.png", UriKind.Relative));
+                FlagCounter--;
+                ctrGameCounter.SetCounter(FlagCounter);
             }
 
             button.Content = image;
